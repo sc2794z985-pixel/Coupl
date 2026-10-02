@@ -18,7 +18,7 @@ collects in singleplayer and on servers listed in `allowedServers` in `config/au
 
 ## Build
 
-Requirements: JDK 21. The Gradle wrapper (8.12.1) is included.
+Requirements: JDK 21. The Gradle wrapper (9.2.0) is included.
 
 ```sh
 cd auditlab
@@ -27,20 +27,20 @@ cd auditlab
 ./gradlew runClient    # dev client
 ```
 
-Install: put the jar and Fabric API into `.minecraft/mods/` on Fabric Loader for Minecraft 1.21.8.
+Install: put the jar and Fabric API into `.minecraft/mods/` on Fabric Loader for Minecraft 1.21.11.
 
 | Component | Version | Source of the pin |
 |-----------|---------|-------------------|
-| Minecraft | 1.21.8 | last release with `WorldRenderEvents.LAST` |
-| Yarn | 1.21.8+build.1 | Fabric API `1.21.8` branch |
-| Fabric Loader | 0.16.13 | Fabric API `1.21.8` branch |
-| Fabric Loom | 1.10.1 | Fabric API `1.21.8` branch |
-| Fabric API | 0.136.1+1.21.8 | fabric-example-mod `1.21.8` branch |
-| Gradle | 8.12.1 | Fabric API `1.21.8` branch |
+| Minecraft | 1.21.11 | |
+| Yarn | 1.21.11+build.3 | Meteor Client `1.21.11` branch (Yarn build) |
+| Fabric Loader | 0.18.2 | Meteor Client `1.21.11` branch |
+| Fabric Loom | 1.14-SNAPSHOT | Meteor Client `1.21.11` branch |
+| Gradle | 9.2.0 | Meteor Client `1.21.11` branch |
+| Fabric API | 0.141.6+1.21.11 | fabric-example-mod `1.21.11` branch |
 
-**Why 1.21.8:** Fabric API 1.21.9+ replaced `WorldRenderEvents.LAST` with an extraction-based
-API (`END_MAIN` and related events). Porting means rewriting `WorldOverlayRenderer` against that
-API. Nothing else in the mod depends on it.
+1.21.11 is the last version with Yarn mappings. From 26.x Minecraft ships unobfuscated and
+Fabric uses Mojang names, so a port beyond 1.21.11 means renaming Minecraft references (the
+`analysis` packages have none).
 
 ## Controls
 
@@ -75,7 +75,7 @@ com.auditlab.mod
 │   ├── ChunkAnalyzer            per-session store: raw observations, geometry, cached analyses
 │   └── model/                   ChunkKey, ChunkObservation (raw), ChunkScore / ChunkAnalysis /
 │                                CavityFinding (inference), ObservedEvent, ScoreReason, Severity, ...
-├── render/                      WorldOverlayRenderer (WorldRenderEvents.LAST), LabelFormatter
+├── render/                      WorldOverlayRenderer (END_EXTRACTION → END_MAIN), LabelFormatter
 ├── export/                      AuditSession, SessionManager (Phase 2: JSON exporter)
 └── safety/                      AccessPolicy (singleplayer / allowlist check)
 ```
@@ -89,6 +89,9 @@ ClientChunkEvents.CHUNK_LOAD ─► ChunkSnapshotter.capture (section container 
                               └► worker: ChunkVolume ─► BlockScanner ─► ChunkObservation (raw)
                                                     └► GeometryAnalyzer ─► CavityFinding (inference)
 ChunkAnalyzer.analysis(key) ─► ChunkScorer ─► ChunkScore + ChunkAnalysis (inference, cached) ─► overlay / command
+
+WorldRenderEvents.END_EXTRACTION ─► visible ChunkAnalysis + label text ─► WorldRenderState (RenderStateDataKey)
+WorldRenderEvents.END_MAIN       ─► chunk boxes (VertexRendering.drawOutline, RenderLayers.lines) + labels
 ```
 
 Raw observations and inferences are stored separately. `ChunkObservation` holds only what the

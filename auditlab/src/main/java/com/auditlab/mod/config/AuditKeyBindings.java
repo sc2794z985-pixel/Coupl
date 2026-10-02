@@ -6,11 +6,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /** UI toggles: O toggles the overlay, L toggles labels (rebindable in Controls). */
 public final class AuditKeyBindings {
-    private static final String CATEGORY = "category.auditlab";
+    /** Shown in Controls under the translation key {@code key.category.auditlab.main}. */
+    private static final KeyBinding.Category CATEGORY = KeyBinding.Category.create(Identifier.of("auditlab", "main"));
 
     private AuditKeyBindings() {
     }
