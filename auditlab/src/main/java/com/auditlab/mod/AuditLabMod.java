@@ -37,11 +37,12 @@ public final class AuditLabMod implements ClientModInitializer {
         SessionManager sessions = new SessionManager();
         ChunkSnapshotter snapshotter = new ChunkSnapshotter(sessions, configs::get);
 
-        new AuditEventListener(sessions, configs, snapshotter).register();
+        AuditEventListener listener = new AuditEventListener(sessions, configs, snapshotter);
+        listener.register();
         new WorldOverlayRenderer(sessions, configs::get).register();
         AuditKeyBindings.register(configs);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-            AuditCommand.register(dispatcher, configs, sessions));
+            AuditCommand.register(dispatcher, configs, sessions, listener));
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
             sessions.end(System.currentTimeMillis());
             snapshotter.close();

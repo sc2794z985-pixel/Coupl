@@ -4,6 +4,7 @@ import com.auditlab.mod.analysis.model.CavityFinding;
 import com.auditlab.mod.analysis.model.ChunkAnalysis;
 import com.auditlab.mod.analysis.model.ChunkKey;
 import com.auditlab.mod.analysis.model.ScoreReason;
+import com.auditlab.mod.events.AuditEventListener;
 import com.auditlab.mod.events.McIds;
 import com.auditlab.mod.export.AuditSession;
 import com.auditlab.mod.export.SessionManager;
@@ -26,10 +27,11 @@ public final class AuditCommand {
     private AuditCommand() {
     }
 
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, ConfigManager configs, SessionManager sessions) {
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, ConfigManager configs,
+                                SessionManager sessions, AuditEventListener listener) {
         dispatcher.register(literal("auditlab")
-            .executes(ctx -> status(ctx, sessions))
-            .then(literal("status").executes(ctx -> status(ctx, sessions)))
+            .executes(ctx -> status(ctx, sessions, listener))
+            .then(literal("status").executes(ctx -> status(ctx, sessions, listener)))
             .then(literal("inspect").executes(ctx -> inspect(ctx, sessions)))
             .then(literal("overlay").executes(ctx -> {
                 configs.get().overlayEnabled = !configs.get().overlayEnabled;
@@ -50,14 +52,24 @@ public final class AuditCommand {
             .then(literal("reload").executes(ctx -> {
                 AuditLabConfig cfg = configs.load();
                 sessions.applyConfig(cfg);
-                if (configs.lastError() != null) return error(ctx, "Config error, using defaults: " + configs.lastError());
-                return feedback(ctx, "Reloaded " + configs.file().getFileName() + " and rescored.");
+                if (configs.lastError() != null) {
+                    error(ctx, "Could not read " + configs.file().toAbsolutePath() + ", using defaults: " + configs.lastError());
+                } else {
+                    feedback(ctx, "Reloaded " + configs.file().toAbsolutePath() + " (allowedServers " + cfg.allowedServers + ").");
+                }
+                var client = ctx.getSource().getClient();
+                listener.evaluateAccess(client, client.getNetworkHandler());
+                return 1;
             })));
     }
 
-    private static int status(CommandContext<FabricClientCommandSource> ctx, SessionManager sessions) {
+    private static int status(CommandContext<FabricClientCommandSource> ctx, SessionManager sessions, AuditEventListener listener) {
+        if (sessions.current() == null) {
+            var client = ctx.getSource().getClient();
+            feedback(ctx, "Not collecting: " + listener.describeAccess(client, client.getNetworkHandler()));
+        }
         AuditSession s = sessions.latest();
-        if (s == null) return error(ctx, "No session yet. Join singleplayer or an allowed server.");
+        if (s == null) return 1;
         var a = s.analyzer();
         feedback(ctx, String.format(Locale.ROOT, "Session %s on %s (%s): %d chunks, %d scans, %d events",
             s.id().toString().substring(0, 8), s.target(), s.isActive() ? "active" : "ended",

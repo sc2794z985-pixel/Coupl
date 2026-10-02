@@ -22,7 +22,7 @@ Requirements: JDK 21. The Gradle wrapper (9.2.0) is included.
 
 ```sh
 cd auditlab
-./gradlew build        # -> build/libs/auditlab-0.1.0.jar
+./gradlew build        # -> build/libs/auditlab-0.1.1.jar
 ./gradlew test         # unit tests for the game-independent packages
 ./gradlew runClient    # dev client
 ```

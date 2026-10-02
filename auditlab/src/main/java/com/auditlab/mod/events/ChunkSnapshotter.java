@@ -91,6 +91,11 @@ public final class ChunkSnapshotter implements AutoCloseable {
         pending.putIfAbsent(key, System.currentTimeMillis() + RESCAN_DEBOUNCE_MS);
     }
 
+    /** Client thread. Queues a chunk for scanning on the next ticks, without debounce. */
+    public void requestScanNow(ChunkKey key) {
+        pending.put(key, 0L);
+    }
+
     /** Client thread, once per tick: drains due rescans while the worker has capacity. */
     public void tick(MinecraftClient client) {
         ClientWorld world = client.world;

@@ -27,6 +27,9 @@ import net.minecraft.util.math.MathHelper;
  * target, ended on disconnect. With no session, every callback is a no-op.
  */
 public final class AuditEventListener {
+    /** Covers the maximum client render distance (32). */
+    private static final int LOADED_CHUNK_SCAN_RADIUS = 32;
+
     private final SessionManager sessions;
     private final ConfigManager configs;
     private final ChunkSnapshotter snapshotter;
@@ -68,19 +71,70 @@ public final class AuditEventListener {
     }
 
     private void onJoin(ClientPlayNetworkHandler handler, MinecraftClient client) {
+        evaluateAccess(client, handler);
+    }
+
+    /**
+     * Starts or ends the session for the current connection according to the allowlist. Runs on
+     * join and after {@code /auditlab reload}, so editing the config takes effect without
+     * reconnecting. Chunks that were already loaded are queued for scanning.
+     */
+    public void evaluateAccess(MinecraftClient client, ClientPlayNetworkHandler handler) {
+        if (handler == null) return;
         AuditLabConfig cfg = configs.get();
         boolean singleplayer = client.isInSingleplayer();
-        ServerInfo info = handler.getServerInfo();
-        String address = info == null ? null : info.address;
+        String address = serverAddress(handler);
         String target = singleplayer ? "singleplayer" : String.valueOf(address);
 
-        if (AccessPolicy.isAuthorized(singleplayer, address, cfg.allowedServers)) {
-            sessions.start(target, cfg, System.currentTimeMillis());
-            notify(client, Text.literal("[AuditLab] Passive audit session started on " + target + ".").formatted(Formatting.AQUA));
-        } else {
+        if (!AccessPolicy.isAuthorized(singleplayer, address, cfg.allowedServers)) {
             sessions.end(System.currentTimeMillis());
-            notify(client, Text.literal("[AuditLab] Not collecting: " + target
-                + " is not in allowedServers (config/auditlab.json).").formatted(Formatting.GRAY));
+            notify(client, Text.literal("[AuditLab] Not collecting: " + describeAccess(client, handler)).formatted(Formatting.GRAY));
+            return;
+        }
+
+        AuditSession current = sessions.current();
+        if (current != null && current.target().equals(target)) {
+            notify(client, Text.literal("[AuditLab] Still collecting on " + target + ".").formatted(Formatting.AQUA));
+            return;
+        }
+        sessions.start(target, cfg, System.currentTimeMillis());
+        queueLoadedChunks(client);
+        notify(client, Text.literal("[AuditLab] Passive audit session started on " + target + ".").formatted(Formatting.AQUA));
+    }
+
+    /** Human-readable explanation of the allowlist decision, including what was compared and where the config lives. */
+    public String describeAccess(MinecraftClient client, ClientPlayNetworkHandler handler) {
+        if (client.isInSingleplayer()) return "singleplayer is always allowed.";
+        String address = handler == null ? null : serverAddress(handler);
+        AuditLabConfig cfg = configs.get();
+        StringBuilder sb = new StringBuilder();
+        if (address == null) {
+            sb.append("no server address available for this connection.");
+        } else {
+            boolean allowed = AccessPolicy.isAuthorized(false, address, cfg.allowedServers);
+            sb.append('"').append(AccessPolicy.normalize(address)).append('"')
+                .append(allowed ? " is in" : " is not in").append(" allowedServers ").append(cfg.allowedServers).append('.');
+        }
+        sb.append(" Config file: ").append(configs.file().toAbsolutePath());
+        if (configs.lastError() != null) sb.append(" (could not be read, defaults in use: ").append(configs.lastError()).append(')');
+        return sb.toString();
+    }
+
+    private static String serverAddress(ClientPlayNetworkHandler handler) {
+        ServerInfo info = handler.getServerInfo();
+        return info == null ? null : info.address;
+    }
+
+    private void queueLoadedChunks(MinecraftClient client) {
+        ClientWorld world = client.world;
+        if (world == null || client.player == null) return;
+        String dimension = McIds.dimension(world);
+        int cx = client.player.getChunkPos().x;
+        int cz = client.player.getChunkPos().z;
+        for (int dx = -LOADED_CHUNK_SCAN_RADIUS; dx <= LOADED_CHUNK_SCAN_RADIUS; dx++) {
+            for (int dz = -LOADED_CHUNK_SCAN_RADIUS; dz <= LOADED_CHUNK_SCAN_RADIUS; dz++) {
+                if (world.isChunkLoaded(cx + dx, cz + dz)) snapshotter.requestScanNow(new ChunkKey(dimension, cx + dx, cz + dz));
+            }
         }
     }
 
