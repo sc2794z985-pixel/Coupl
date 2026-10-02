@@ -22,6 +22,13 @@ public final class AuditLabConfig {
     public int labelReasonLines = 2;
     public int maxLabels = 48;
 
+    // --- Zoom (hold C) ----------------------------------------------------------------------
+    public boolean zoomEnabled = true;
+    /** FOV divisor when the key is pressed; the scroll wheel adjusts it while held. */
+    public double zoomFactor = 4.0;
+    /** Use vanilla's smooth (cinematic) camera while zoomed, which steadies aiming. */
+    public boolean zoomSmoothCamera = true;
+
     // --- Safety -----------------------------------------------------------------------------
     /** Servers you operate. Collection only runs here and in singleplayer. */
     public List<String> allowedServers = new ArrayList<>(List.of("localhost", "127.0.0.1"));
@@ -109,6 +116,8 @@ public final class AuditLabConfig {
         entityWeights = nonNegative(entityWeights);
         contextMultipliers = nonNegative(contextMultipliers);
 
+        if (!(zoomFactor >= 1.5)) zoomFactor = 1.5;
+        zoomFactor = Math.min(50.0, zoomFactor);
         renderDistanceChunks = clamp(renderDistanceChunks, 1, 64);
         labelReasonLines = clamp(labelReasonLines, 0, 8);
         maxLabels = clamp(maxLabels, 0, 512);

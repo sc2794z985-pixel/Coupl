@@ -22,7 +22,7 @@ Requirements: JDK 21. The Gradle wrapper (9.2.0) is included.
 
 ```sh
 cd auditlab
-./gradlew build        # -> build/libs/auditlab-0.1.1.jar
+./gradlew build        # -> build/libs/auditlab-0.1.2.jar
 ./gradlew test         # unit tests for the game-independent packages
 ./gradlew runClient    # dev client
 ```
@@ -48,6 +48,7 @@ Fabric uses Mojang names, so a port beyond 1.21.11 means renaming Minecraft refe
 |-------|--------|
 | `O` | Toggle chunk overlay |
 | `L` | Toggle labels |
+| `C` (hold) | Zoom; scroll wheel adjusts strength while held |
 | `/auditlab status` | Session summary and top 5 chunks |
 | `/auditlab inspect` | Full breakdown and cavity metrics for the chunk you're standing in |
 | `/auditlab overlay`, `/auditlab labels` | Toggle overlay / labels |
@@ -55,6 +56,14 @@ Fabric uses Mojang names, so a port beyond 1.21.11 means renaming Minecraft refe
 | `/auditlab reload` | Reload `config/auditlab.json` and rescore |
 
 The command is client-side only and is never sent to the server.
+
+**Zoom:** hold `C` to divide the field of view by `zoomFactor` (default 4). While held, the
+scroll wheel zooms further in or out (1.5x to 50x) instead of switching hotbar slots. Each new
+press starts at `zoomFactor` again. `zoomSmoothCamera` (default on) switches vanilla's
+cinematic camera on while zoomed to steady aiming. `zoomEnabled: false` disables it. `C` is also
+vanilla's "Save Toolbar Activator" (creative mode: `C` + number). The zoom works anyway, but
+rebind one of the two in Controls if pressing `C` + a number while zoomed overwrites a saved
+toolbar.
 
 ## Layout
 
@@ -76,6 +85,7 @@ com.auditlab.mod
 │   └── model/                   ChunkKey, ChunkObservation (raw), ChunkScore / ChunkAnalysis /
 │                                CavityFinding (inference), ObservedEvent, ScoreReason, Severity, ...
 ├── render/                      WorldOverlayRenderer (END_EXTRACTION → END_MAIN), LabelFormatter
+├── zoom/                        ZoomController (hold-to-zoom state and easing); mixin/GameRendererMixin, MouseMixin
 ├── export/                      AuditSession, SessionManager (Phase 2: JSON exporter)
 └── safety/                      AccessPolicy (singleplayer / allowlist check)
 ```

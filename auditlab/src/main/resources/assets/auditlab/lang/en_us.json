@@ -1,5 +1,6 @@
 {
   "key.category.auditlab.main": "AuditLab",
   "key.auditlab.toggle_overlay": "Toggle chunk overlay",
-  "key.auditlab.toggle_labels": "Toggle chunk labels"
+  "key.auditlab.toggle_labels": "Toggle chunk labels",
+  "key.auditlab.zoom": "Zoom (hold)"
 }
