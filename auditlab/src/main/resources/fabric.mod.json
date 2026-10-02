@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "auditlab",
+  "version": "${version}",
+  "name": "AuditLab",
+  "description": "Passive auditor for server operators testing chunk-masking / anti-ESP plugins. Measures and visualises what the server sends to a legitimate client; never sends packets, moves, or interacts.",
+  "authors": ["AuditLab contributors"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.auditlab.mod.AuditLabMod"]
+  },
+  "mixins": [
+    {
+      "config": "auditlab.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.13",
+    "minecraft": "${mc_version}",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
