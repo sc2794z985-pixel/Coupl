@@ -4,9 +4,13 @@
   "package": "com.auditlab.mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "CameraMixin",
     "ClientPlayNetworkHandlerMixin",
+    "EntityMixin",
     "GameRendererMixin",
-    "MouseMixin"
+    "KeyboardInputMixin",
+    "MouseMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

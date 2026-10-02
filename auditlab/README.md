@@ -22,7 +22,7 @@ Requirements: JDK 21. The Gradle wrapper (9.2.0) is included.
 
 ```sh
 cd auditlab
-./gradlew build        # -> build/libs/auditlab-0.1.2.jar
+./gradlew build        # -> build/libs/auditlab-0.1.3.jar
 ./gradlew test         # unit tests for the game-independent packages
 ./gradlew runClient    # dev client
 ```
@@ -49,6 +49,7 @@ Fabric uses Mojang names, so a port beyond 1.21.11 means renaming Minecraft refe
 | `O` | Toggle chunk overlay |
 | `L` | Toggle labels |
 | `C` (hold) | Zoom; scroll wheel adjusts strength while held |
+| `F4` | Toggle freecam; scroll wheel adjusts flight speed |
 | `/auditlab status` | Session summary and top 5 chunks |
 | `/auditlab inspect` | Full breakdown and cavity metrics for the chunk you're standing in |
 | `/auditlab overlay`, `/auditlab labels` | Toggle overlay / labels |
@@ -56,6 +57,14 @@ Fabric uses Mojang names, so a port beyond 1.21.11 means renaming Minecraft refe
 | `/auditlab reload` | Reload `config/auditlab.json` and rescore |
 
 The command is client-side only and is never sent to the server.
+
+**Freecam:** `F4` detaches the camera for cinematic shots. Your player stays where it is (and
+stays visible); the movement keys fly the camera instead, with jump/sneak for up/down and sprint
+for double speed. Starts and stops glide smoothly (`freecamSmoothing`, 0-0.95) and mouse look
+uses vanilla's smooth camera (`freecamSmoothCamera`). Scroll changes the speed (`freecamSpeed`,
+blocks per tick). The hand is hidden; press `F1` to hide the HUD too. Like the audit, freecam is
+only available in singleplayer and on servers in `allowedServers`, and it switches off when you
+disconnect. Clicks still act from your player's position, not the camera's.
 
 **Zoom:** hold `C` to divide the field of view by `zoomFactor` (default 4). While held, the
 scroll wheel zooms further in or out (1.5x to 50x) instead of switching hotbar slots. Each new
@@ -86,6 +95,8 @@ com.auditlab.mod
 │                                CavityFinding (inference), ObservedEvent, ScoreReason, Severity, ...
 ├── render/                      WorldOverlayRenderer (END_EXTRACTION → END_MAIN), LabelFormatter
 ├── zoom/                        ZoomController (hold-to-zoom state and easing); mixin/GameRendererMixin, MouseMixin
+├── freecam/                     FreecamController (detached camera); mixin/CameraMixin, EntityMixin, KeyboardInputMixin,
+│                                WorldRendererMixin, GameRendererMixin (hand)
 ├── export/                      AuditSession, SessionManager (Phase 2: JSON exporter)
 └── safety/                      AccessPolicy (singleplayer / allowlist check)
 ```

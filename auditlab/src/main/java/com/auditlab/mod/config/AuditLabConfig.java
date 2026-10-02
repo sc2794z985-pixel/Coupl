@@ -29,6 +29,14 @@ public final class AuditLabConfig {
     /** Use vanilla's smooth (cinematic) camera while zoomed, which steadies aiming. */
     public boolean zoomSmoothCamera = true;
 
+    // --- Freecam (F4) -----------------------------------------------------------------------
+    /** Blocks per tick (x20 = blocks per second); sprint doubles it, scroll adjusts it in-game. */
+    public double freecamSpeed = 0.5;
+    /** 0 = instant starts/stops, up to 0.95 = very floaty glides. */
+    public double freecamSmoothing = 0.6;
+    /** Use vanilla's smooth (cinematic) camera for mouse look while in freecam. */
+    public boolean freecamSmoothCamera = true;
+
     // --- Safety -----------------------------------------------------------------------------
     /** Servers you operate. Collection only runs here and in singleplayer. */
     public List<String> allowedServers = new ArrayList<>(List.of("localhost", "127.0.0.1"));
@@ -118,6 +126,10 @@ public final class AuditLabConfig {
 
         if (!(zoomFactor >= 1.5)) zoomFactor = 1.5;
         zoomFactor = Math.min(50.0, zoomFactor);
+        if (!(freecamSpeed >= 0.02)) freecamSpeed = 0.02;
+        freecamSpeed = Math.min(10.0, freecamSpeed);
+        if (!(freecamSmoothing >= 0)) freecamSmoothing = 0;
+        freecamSmoothing = Math.min(0.95, freecamSmoothing);
         renderDistanceChunks = clamp(renderDistanceChunks, 1, 64);
         labelReasonLines = clamp(labelReasonLines, 0, 8);
         maxLabels = clamp(maxLabels, 0, 512);

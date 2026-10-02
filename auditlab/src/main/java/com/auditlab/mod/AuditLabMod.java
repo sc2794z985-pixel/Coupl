@@ -40,7 +40,7 @@ public final class AuditLabMod implements ClientModInitializer {
         AuditEventListener listener = new AuditEventListener(sessions, configs, snapshotter);
         listener.register();
         new WorldOverlayRenderer(sessions, configs::get).register();
-        AuditKeyBindings.register(configs);
+        AuditKeyBindings.register(configs, sessions);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
             AuditCommand.register(dispatcher, configs, sessions, listener));
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
