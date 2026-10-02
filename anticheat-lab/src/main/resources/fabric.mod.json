@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "anticheat-lab",
+  "version": "${version}",
+  "name": "AntiCheat Lab",
+  "description": "Passive network-output auditor for server operators testing chunk-masking / anti-ESP plugins. Scores what the client legitimately receives; never sends packets, moves, or mines.",
+  "authors": ["AntiCheat Lab contributors"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "meteor": ["com.anticheatlab.AntiCheatLab"]
+  },
+  "custom": {
+    "meteor-client:color": "70,170,255",
+    "modmenu": {
+      "parent": {
+        "id": "meteor-client"
+      }
+    }
+  },
+  "depends": {
+    "java": ">=21",
+    "minecraft": ["${mc_version}"],
+    "fabricloader": ">=0.18.0",
+    "meteor-client": "*"
+  }
+}

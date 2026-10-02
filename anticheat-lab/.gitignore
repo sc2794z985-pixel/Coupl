@@ -1,0 +1,14 @@
+# Gradle
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Loom dev runtime
+run/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+bin/

@@ -1,0 +1,63 @@
+plugins {
+    // Literal required: the plugins {} block cannot read gradle.properties.
+    id "fabric-loom" version "1.14-SNAPSHOT"
+}
+
+base {
+    archivesName = project.archives_base_name
+    version = project.mod_version
+    group = project.maven_group
+}
+
+repositories {
+    maven {
+        name = "Meteor Dev Releases"
+        url = "https://maven.meteordev.org/releases"
+    }
+    maven {
+        name = "Meteor Dev Snapshots"
+        url = "https://maven.meteordev.org/snapshots"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    // Fabric
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Meteor
+    modImplementation "meteordevelopment:meteor-client:${project.meteor_version}"
+
+    // Tests (model/scoring/data/safety packages are plain Java and need no game runtime)
+    testImplementation platform("org.junit:junit-bom:${project.junit_version}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mc_version", project.minecraft_version
+
+    filteringCharset = "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version, "mc_version": project.minecraft_version
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    it.options.release = 21
+    it.options.compilerArgs.addAll(["-Xlint:deprecation", "-Xlint:unchecked"])
+}
+
+test {
+    useJUnitPlatform()
+}
