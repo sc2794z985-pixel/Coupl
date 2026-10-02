@@ -29,7 +29,7 @@ cd anticheat-lab
 Install: copy the jar into `.minecraft/mods/` next to Fabric Loader and the Meteor Client build
 for the **same** Minecraft version.
 
-Version pins in `gradle.properties` and `build.gradle` match the official
+Version pins in `gradle.properties` match the official
 `meteor-addon-template` at its 1.21.11 commit:
 
 | Component | Version |
@@ -41,8 +41,7 @@ Version pins in `gradle.properties` and `build.gradle` match the official
 | Meteor Client | 1.21.11-SNAPSHOT |
 
 To target an earlier 1.21.x release, copy the versions from the template's commit for that
-release (`git log` on MeteorDevelopment/meteor-addon-template) into `gradle.properties` and the
-Loom version in `build.gradle`.
+release (`git log` on MeteorDevelopment/meteor-addon-template) into `gradle.properties`.
 
 ## Layout
 

@@ -1,6 +1,5 @@
 plugins {
-    // Literal required: the plugins {} block cannot read gradle.properties.
-    id "fabric-loom" version "1.14-SNAPSHOT"
+    id "fabric-loom" version "${loom_version}"
 }
 
 base {
