@@ -1,0 +1,8 @@
+{
+	"key.category.simulation-distance-visualizer.main": "Simulation Distance Visualizer",
+	"key.simulation-distance-visualizer.toggle_hud": "Toggle HUD",
+	"key.simulation-distance-visualizer.toggle_boundary": "Toggle Simulation Boundary",
+	"key.simulation-distance-visualizer.cycle_mode": "Switch Display Mode",
+	"key.simulation-distance-visualizer.cycle_intensity": "Cycle Intensity",
+	"key.simulation-distance-visualizer.toggle_debug": "Toggle Debug Info"
+}

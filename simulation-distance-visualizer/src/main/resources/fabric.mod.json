@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "simulation-distance-visualizer",
+	"version": "${version}",
+	"name": "Simulation Distance Visualizer",
+	"description": "Client-side diagnostic tool: shows the simulation distance and view distance the connected server actually sent, and outlines the simulated chunk region in the world. Read-only, never modifies packets.",
+	"authors": [
+		"Joel Koester"
+	],
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"dev.simdistviz.SimulationDistanceVisualizerClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "simulation-distance-visualizer.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.17.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

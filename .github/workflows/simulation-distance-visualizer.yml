@@ -1,0 +1,27 @@
+name: Simulation Distance Visualizer
+
+on:
+  push:
+    paths:
+      - 'simulation-distance-visualizer/**'
+      - '.github/workflows/simulation-distance-visualizer.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: simulation-distance-visualizer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build
+        run: chmod +x gradlew && ./gradlew build --stacktrace --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: simulation-distance-visualizer
+          path: simulation-distance-visualizer/build/libs/*.jar
