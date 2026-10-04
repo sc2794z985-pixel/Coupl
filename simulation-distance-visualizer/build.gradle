@@ -1,6 +1,6 @@
 plugins {
-	// 1.21.11 is still an obfuscated release, so the remapping variant of Loom is required for Yarn.
-	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	// Loom 1.13 is the newest line that still runs on Java 21 (the Java version Minecraft 1.21.11 uses).
+	id 'fabric-loom' version "${loom_version}"
 }
 
 version = project.mod_version

@@ -21,7 +21,7 @@ It is a read-only diagnostic tool: no packets are changed, blocked or sent, and 
 
 The mod JAR is `build/libs/simulation-distance-visualizer-1.0.0.jar`. Copy it with Fabric API into `.minecraft/mods`.
 
-Toolchain: Fabric Loom 1.18 (`net.fabricmc.fabric-loom-remap`), Yarn `1.21.11+build.6`, Gradle 9.7.1 (wrapper included).
+Toolchain: Fabric Loom 1.13.3, Yarn `1.21.11+build.6`, Gradle 9.1.0 (wrapper included). Gradle itself runs on Java 21.
 
 ## Keys
 
